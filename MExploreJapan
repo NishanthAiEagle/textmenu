@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Explore Japan · Japanese Cuisine</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- model-viewer loaded as regular script for broader compatibility -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+
+    <style>
+        :root {
+            --washi:       #f5ede0;
+            --washi-dark:  #ede0cc;
+            --ink:         #1c1108;
+            --ink-mid:     #2e1c0e;
+            --ink-deep:    #100a04;
+            --ink-light:   #6b5236;
+            --ink-faint:   #9a7d5a;
+            --crimson:     #8b1a1a;
+            --crimson-mid: #b52020;
+            --gold:        #9a7820;
+            --gold-lt:     #c4a030;
+            --gold-pale:   #e8d080;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background-color: var(--ink-deep);
+            color: var(--washi);
+            font-family: 'Noto Sans JP', sans-serif;
+            height: 100svh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='0' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='40' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='10' cy='20' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='30' cy='20' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3C/svg%3E");
+            opacity: 0.055;
+            pointer-events: none; z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 15% 85%, rgba(139,26,26,0.14) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 70% at 85% 15%, rgba(154,120,32,0.10) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ─── Header ─────────────────────────────── */
+        .nav-header {
+            padding: max(env(safe-area-inset-top), 24px) 20px 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(196,160,48,0.18);
+            flex-shrink: 0;
+            position: relative; z-index: 10;
+        }
+
+        .nav-header::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--crimson-mid), var(--gold-lt), var(--crimson-mid), transparent);
+        }
+
+        .header-mon {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(196,160,48,0.35);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px;
+            animation: monSpin 20s linear infinite;
+        }
+        .header-mon span {
+            font-size: 20px;
+            color: var(--crimson-mid);
+            animation: monSpin 20s linear infinite reverse;
+            display: block;
+        }
+        @keyframes monSpin { to { transform: rotate(360deg); } }
+
+        .nav-header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(22px, 5.5vw, 34px);
+            margin: 0 0 4px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            background: linear-gradient(160deg, var(--washi) 30%, var(--gold-pale) 65%, var(--washi) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-header-jp {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 12px; font-weight: 300;
+            color: rgba(245,237,224,0.4);
+            letter-spacing: 5px;
+            display: block; margin-bottom: 5px;
+        }
+
+        .nav-header p {
+            font-size: 9px;
+            font-family: 'Noto Sans JP', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: rgba(245,237,224,0.3);
+            margin: 0;
+        }
+
+        .brush-divider {
+            width: 80px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--crimson-mid), transparent);
+            margin: 10px auto 0;
+        }
+
+        /* ─── Scroll Grid ─────────────────────────── */
+        .explorer-grid {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 24px 20px;
+            gap: 14px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            scrollbar-width: none;
+            position: relative; z-index: 10;
+        }
+        .explorer-grid::-webkit-scrollbar { display: none; }
+
+        /* ─── Card ────────────────────────────────── */
+        .landmark-card {
+            flex: 0 0 min(82vw, 348px);
+            height: min(60vh, 508px);
+            background: #100a04;
+            border: 1px solid rgba(196,160,48,0.2);
+            border-top: 2px solid var(--crimson);
+            border-radius: 1px;
+            position: relative;
+            scroll-snap-align: center;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            will-change: transform;
+            transform: translateZ(0);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .landmark-card:hover {
+            border-color: rgba(196,160,48,0.4);
+            border-top-color: var(--crimson-mid);
+            box-shadow: 0 8px 32px rgba(139,26,26,0.28), 0 0 0 1px rgba(196,160,48,0.12);
+        }
+
+        .landmark-card::before {
+            content: '';
+            position: absolute; inset: 8px;
+            border: 1px solid rgba(196,160,48,0.09);
+            pointer-events: none; z-index: 3;
+        }
+
+        /* ─── Thumbnail ─────────────────────────────── */
+        .thumb-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 50% 60%, #1a150a 0%, #080604 100%);
+            touch-action: none; /* let JS handle all touch on thumb */
+        }
+        .thumb-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
+            transition: transform 0.5s ease;
+            transform-origin: center center;
+            will-change: transform;
+            user-select: none; -webkit-user-select: none;
+        }
+        /* suppress hover zoom when user is pinching */
+        .thumb-wrap.pinching img { transition: none !important; }
+        .landmark-card:hover .thumb-wrap:not(.pinching) img { transform: scale(1.05); }
+
+        /* Zoom hint badge */
+        .zoom-hint {
+            position: absolute; bottom: 38px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16,10,4,0.72);
+            border: 1px solid rgba(196,160,48,0.2);
+            color: rgba(245,237,224,0.6);
+            font-family: 'Cinzel', serif;
+            font-size: 8px; letter-spacing: 2px;
+            padding: 4px 10px; border-radius: 1px;
+            pointer-events: none; z-index: 4;
+            opacity: 1; transition: opacity 0.6s;
+        }
+        .zoom-hint.hidden { opacity: 0; }
+
+        .thumb-wrap::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 45%, rgba(16,10,4,0.88) 100%);
+            pointer-events: none;
+        }
+
+        .card-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(16,10,4,0.82);
+            border: 1px solid rgba(196,160,48,0.2);
+            color: var(--gold-lt);
+            font-family: 'Cinzel', serif;
+            font-size: 9px; letter-spacing: 1px;
+            padding: 3px 9px; z-index: 5;
+        }
+
+        /* ─── Info Panel ──────────────────────────── */
+        .landmark-info {
+            padding: 13px 16px 15px;
+            background: rgba(16,10,4,0.97);
+            border-top: 1px solid rgba(196,160,48,0.12);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .landmark-info::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: var(--crimson);
+        }
+
+        .landmark-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(18px, 4.5vw, 23px);
+            font-weight: 600; color: var(--washi);
+            margin-bottom: 2px; line-height: 1.15;
+            letter-spacing: 0.02em;
+        }
+
+        .landmark-city {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 9px; color: var(--gold-lt);
+            text-transform: uppercase; letter-spacing: 3px;
+            margin-bottom: 11px;
+        }
+
+        /* ─── AR Button ───────────────────────────── */
+        .ar-btn {
+            width: 100%;
+            background: var(--crimson);
+            border: none; padding: 12px;
+            border-radius: 1px;
+            color: var(--washi);
+            font-family: 'Cinzel', serif;
+            font-weight: 600; font-size: 11px;
+            letter-spacing: 3px; text-transform: uppercase;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+            min-height: 44px;
+            position: relative; overflow: hidden;
+        }
+        .ar-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, #6a1212 0%, var(--crimson) 100%);
+            opacity: 0; transition: opacity 0.18s;
+        }
+        .ar-btn:hover::before { opacity: 1; }
+        .ar-btn:hover { box-shadow: 0 4px 18px rgba(139,26,26,0.5); }
+        .ar-btn:active { transform: scale(0.97); }
+        .ar-btn > * { position: relative; z-index: 1; }
+
+        .ar-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        .ar-btn.loading .btn-label::after {
+            content: '…';
+            animation: ellipsis 1.2s steps(3, end) infinite;
+        }
+        @keyframes ellipsis {
+            0%   { content: '.'; }
+            33%  { content: '..'; }
+            66%  { content: '…'; }
+        }
+
+        /* ─── AR Viewer Overlay ─────────────────────
+           model-viewer must be VISIBLE and in DOM for
+           activateAR() to work. We hide it behind the
+           card but keep it accessible.
+        ─────────────────────────────────────────────── */
+        .mv-container {
+            position: absolute;
+            width: 1px; height: 1px;
+            overflow: hidden;
+            opacity: 0.001;         /* near-invisible but rendered */
+            pointer-events: none;
+            top: 0; left: 0;
+            z-index: -1;
+        }
+        .mv-container model-viewer {
+            width: 1px; height: 1px;
+            display: block;
+        }
+
+        /* ─── Toast ───────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: max(env(safe-area-inset-bottom), 20px);
+            left: 50%; transform: translateX(-50%) translateY(80px);
+            background: rgba(28,17,8,0.95);
+            border: 1px solid rgba(196,160,48,0.3);
+            color: var(--washi);
+            font-family: 'Cinzel', serif;
+            font-size: 11px; letter-spacing: 1.5px;
+            padding: 12px 22px; border-radius: 1px;
+            white-space: nowrap;
+            transition: transform 0.35s ease, opacity 0.35s;
+            opacity: 0; z-index: 999;
+            backdrop-filter: blur(12px);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ─── Back Button ─────────────────────────── */
+        .back-btn {
+            position: fixed;
+            top: max(env(safe-area-inset-top), 14px); left: 16px;
+            background: rgba(28,17,8,0.78);
+            border: 1px solid rgba(196,160,48,0.25);
+            color: rgba(245,237,224,0.8);
+            padding: 8px 16px; border-radius: 1px;
+            font-family: 'Cinzel', serif; font-size: 10px;
+            text-decoration: none; z-index: 200;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            letter-spacing: 2px; min-height: 36px;
+            display: flex; align-items: center; gap: 6px;
+            transition: border-color 0.18s, color 0.18s;
+        }
+        .back-btn:hover { border-color: var(--crimson-mid); color: var(--washi); }
+
+        /* ─── Scroll dots ────────────────────────── */
+        .scroll-dots {
+            flex-shrink: 0;
+            display: flex; justify-content: center; align-items: center;
+            gap: 7px;
+            padding: 10px 0 max(env(safe-area-inset-bottom), 14px);
+            position: relative; z-index: 10;
+        }
+        .dot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: rgba(196,160,48,0.2);
+            transition: background 0.3s, transform 0.3s, width 0.3s, border-radius 0.3s;
+        }
+        .dot.active {
+            background: var(--crimson-mid);
+            transform: scale(1.2);
+            width: 18px; border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="FunZone.html" class="back-btn">← Back</a>
+
+    <div class="nav-header">
+        <div class="header-mon"><span>✿</span></div>
+        <h1>Explore Japan</h1>
+        <span class="nav-header-jp">日本を探索する</span>
+        <div class="brush-divider"></div>
+        <p>Augmented Reality Landmarks</p>
+    </div>
+
+    <div class="explorer-grid" id="grid"></div>
+    <div class="scroll-dots" id="dots"></div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const landmarks = [
+            { name: "Tokyo Skytree",       city: "Tokyo",  folder: "tokyoskytree",        file: "tokyoskytree",        hasUsdz: true  },
+            { name: "Japanese Torii Gate", city: "Japan",  folder: "Japanese Torii Gate",  file: "Japanese Torii Gate", hasUsdz: true  },
+            { name: "Japanese Castle",     city: "Japan",  folder: "japanesecastle",        file: "japanesecastle",      hasUsdz: true  },
+            { name: "Nijo Castle",         city: "Kyoto",  folder: "Nijo Castle japan",     file: "Nijo Castle japan",   hasUsdz: false },
+            { name: "Pagoda",              city: "Japan",  folder: "pagoda",                file: "pagoda",              hasUsdz: true  },
+            { name: "Kimono Dress",        city: "Japan",  folder: "dress",                 file: "dress",               hasUsdz: true  },
+        ];
+
+        const grid   = document.getElementById('grid');
+        const dotsEl = document.getElementById('dots');
+        const toast  = document.getElementById('toast');
+
+        let toastTimer;
+        function showToast(msg, duration = 3000) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        // Check WebXR / SceneViewer / QuickLook support
+        function getARMode() {
+            if (isIOS) return 'quicklook';
+            if (navigator.xr) return 'webxr';
+            if (/android/i.test(navigator.userAgent)) return 'scene-viewer';
+            return 'none';
+        }
+        const arMode = getARMode();
+
+        const cityJP = {
+            'Tokyo': '東京', 'Kyoto': '京都', 'Japan': '日本',
+        };
+
+        const viewers = []; // store model-viewer refs
+
+        landmarks.forEach((l, i) => {
+            const imgPath = `ExploreJapan/${l.folder}/${l.file}.png`;
+            const glbSrc  = `ExploreJapan/${l.folder}/${l.file}.glb`;
+            const usdzSrc = `ExploreJapan/${l.folder}/${l.file}.usdz`;
+            const jpCity  = cityJP[l.city] || l.city;
+
+            /* ── Card markup ── */
+            const card = document.createElement('div');
+            card.className = 'landmark-card';
+            card.dataset.index = i;
+            card.innerHTML = `
+                <div class="thumb-wrap" id="thumb-${i}">
+                    <img src="${imgPath}" alt="${l.name}" loading="${i === 0 ? 'eager' : 'lazy'}" id="img-${i}" draggable="false">
+                    <div class="card-badge">${String(i+1).padStart(2,'0')} / ${String(landmarks.length).padStart(2,'0')}</div>
+                    <div class="zoom-hint" id="hint-${i}">✦ PINCH TO ZOOM</div>
+                </div>
+                <div class="landmark-info">
+                    <div class="landmark-name">${l.name}</div>
+                    <div class="landmark-city">${l.city} &nbsp;·&nbsp; ${jpCity}</div>
+                    <button class="ar-btn" id="arbtn-${i}">
+                        <span>✦</span>
+                        <span class="btn-label">View in Real World</span>
+                    </button>
+                </div>
+                <!-- model-viewer lives inside the card but invisible -->
+                <div class="mv-container" id="mvc-${i}"></div>
+            `;
+            grid.appendChild(card);
+
+            /* ── Build model-viewer INSIDE the card's mv-container ── */
+            const mvc = card.querySelector(`#mvc-${i}`);
+            const mv  = document.createElement('model-viewer');
+            mv.setAttribute('src', glbSrc);
+            mv.setAttribute('ar', '');
+            mv.setAttribute('ar-modes', isIOS && l.hasUsdz
+                ? 'quick-look webxr scene-viewer'
+                : 'webxr scene-viewer quick-look');
+            if (isIOS && l.hasUsdz) mv.setAttribute('ios-src', usdzSrc);
+            mv.setAttribute('ar-placement', 'floor');
+            mv.setAttribute('ar-scale', 'fixed');         // 'fixed' is more reliable than 'auto'
+            mv.setAttribute('camera-controls', '');
+            mv.setAttribute('touch-action', 'none');
+            mv.setAttribute('interaction-prompt', 'none');
+            mv.setAttribute('shadow-intensity', '1');
+            mv.setAttribute('exposure', '1.1');
+            mv.setAttribute('environment-image', 'neutral');
+            mv.setAttribute('loading', i === 0 ? 'eager' : 'lazy');
+            mv.setAttribute('reveal', 'auto');
+            // give it real pixel dimensions so WebXR can attach
+            mv.style.cssText = 'width:1px;height:1px;display:block;';
+            mvc.appendChild(mv);
+            viewers.push(mv);
+
+            /* ── Track load/error state ── */
+            mv._loaded = false;
+            mv._errored = false;
+            mv.addEventListener('load',  () => { mv._loaded = true; });
+            mv.addEventListener('error', (e) => {
+                mv._errored = true;
+                console.warn(`⚠️ model-viewer error for ${l.name}:`, e);
+            });
+
+            /* ── AR session events for UX feedback ── */
+            mv.addEventListener('ar-status', (e) => {
+                const btn = document.getElementById(`arbtn-${i}`);
+                if (e.detail.status === 'session-started') {
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                } else if (e.detail.status === 'not-presenting') {
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                } else if (e.detail.status === 'failed') {
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    showToast('AR unavailable on this device');
+                }
+            });
+
+            /* ── Dot ── */
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.dataset.index = i;
+            dotsEl.appendChild(dot);
+
+            /* ── Pinch-to-zoom on thumbnail ── */
+            const thumbWrap = card.querySelector(`#thumb-${i}`);
+            const thumbImg  = card.querySelector(`#img-${i}`);
+            const hint      = card.querySelector(`#hint-${i}`);
+
+            let scale = 1, lastScale = 1;
+            let originX = 50, originY = 50; // % within image
+            let panX = 0, panY = 0, lastPanX = 0, lastPanY = 0;
+            let isPinching = false;
+            let hintTimer = setTimeout(() => hint.classList.add('hidden'), 3000);
+
+            const MIN_SCALE = 1, MAX_SCALE = 4;
+
+            function clampPan(s, px, py) {
+                // clamp so image edges don't go inside the container
+                const maxPan = ((s - 1) / 2) * 100;
+                return {
+                    x: Math.max(-maxPan, Math.min(maxPan, px)),
+                    y: Math.max(-maxPan, Math.min(maxPan, py))
+                };
+            }
+
+            function applyTransform(animated = false) {
+                thumbImg.style.transition = animated ? 'transform 0.25s ease' : 'none';
+                thumbImg.style.transformOrigin = `${originX}% ${originY}%`;
+                thumbImg.style.transform = `scale(${scale}) translate(${panX / scale}px, ${panY / scale}px)`;
+            }
+
+            function resetZoom(animated = true) {
+                scale = 1; panX = 0; panY = 0;
+                originX = 50; originY = 50;
+                thumbWrap.classList.remove('pinching');
+                applyTransform(animated);
+            }
+
+            thumbWrap.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    isPinching = true;
+                    thumbWrap.classList.add('pinching');
+                    hint.classList.add('hidden');
+                    clearTimeout(hintTimer);
+
+                    const t1 = e.touches[0], t2 = e.touches[1];
+                    lastScale = scale;
+                    lastPanX = panX; lastPanY = panY;
+
+                    // pinch midpoint as % of image element
+                    const rect = thumbWrap.getBoundingClientRect();
+                    originX = ((t1.clientX + t2.clientX) / 2 - rect.left) / rect.width  * 100;
+                    originY = ((t1.clientY + t2.clientY) / 2 - rect.top)  / rect.height * 100;
+
+                    e._startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                    e._midX = (t1.clientX + t2.clientX) / 2;
+                    e._midY = (t1.clientY + t2.clientY) / 2;
+
+                    // store on element for use in touchmove
+                    thumbWrap._pinchStart = {
+                        dist: e._startDist,
+                        midX: e._midX, midY: e._midY,
+                        scale: lastScale, panX: lastPanX, panY: lastPanY
+                    };
+
+                    // prevent card scroll during pinch
+                    e.stopPropagation();
+                } else if (e.touches.length === 1 && scale > 1) {
+                    // single finger pan when zoomed in
+                    thumbWrap._panStart = {
+                        x: e.touches[0].clientX - panX,
+                        y: e.touches[0].clientY - panY
+                    };
+                    e.stopPropagation();
+                }
+            }, { passive: true });
+
+            thumbWrap.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && thumbWrap._pinchStart) {
+                    const t1 = e.touches[0], t2 = e.touches[1];
+                    const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                    const ratio = dist / thumbWrap._pinchStart.dist;
+                    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, thumbWrap._pinchStart.scale * ratio));
+
+                    // translate following midpoint movement
+                    const rect = thumbWrap.getBoundingClientRect();
+                    const curMidX = (t1.clientX + t2.clientX) / 2;
+                    const curMidY = (t1.clientY + t2.clientY) / 2;
+                    const dx = curMidX - thumbWrap._pinchStart.midX;
+                    const dy = curMidY - thumbWrap._pinchStart.midY;
+
+                    const clamped = clampPan(scale, thumbWrap._pinchStart.panX + dx, thumbWrap._pinchStart.panY + dy);
+                    panX = clamped.x; panY = clamped.y;
+
+                    applyTransform(false);
+                    e.stopPropagation();
+                } else if (e.touches.length === 1 && scale > 1 && thumbWrap._panStart) {
+                    const dx = e.touches[0].clientX - thumbWrap._panStart.x;
+                    const dy = e.touches[0].clientY - thumbWrap._panStart.y;
+                    const clamped = clampPan(scale, dx, dy);
+                    panX = clamped.x; panY = clamped.y;
+                    applyTransform(false);
+                    e.stopPropagation();
+                }
+            }, { passive: true });
+
+            thumbWrap.addEventListener('touchend', (e) => {
+                if (isPinching && e.touches.length < 2) {
+                    isPinching = false;
+                    thumbWrap._pinchStart = null;
+                    if (scale <= 1.05) resetZoom(true);
+                    else thumbWrap.classList.remove('pinching');
+                }
+                if (e.touches.length === 0) thumbWrap._panStart = null;
+            }, { passive: true });
+
+            // Double-tap to reset zoom
+            let lastTap = 0;
+            thumbWrap.addEventListener('touchend', (e) => {
+                if (e.touches.length === 0) {
+                    const now = Date.now();
+                    if (now - lastTap < 280) resetZoom(true);
+                    lastTap = now;
+                }
+            }, { passive: true });
+
+            /* ── Button handler ── */
+            card.querySelector(`#arbtn-${i}`).addEventListener('click', async () => {
+                const btn = document.getElementById(`arbtn-${i}`);
+
+                if (arMode === 'none') {
+                    showToast('AR not supported on this device/browser');
+                    return;
+                }
+
+                if (mv._errored) {
+                    showToast('Model failed to load — check file path');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.classList.add('loading');
+
+                /* Wait for model to finish loading (max 15s) */
+                if (!mv._loaded) {
+                    showToast('Loading model…', 15000);
+                    await new Promise((resolve, reject) => {
+                        const timeout = setTimeout(() => reject(new Error('timeout')), 15000);
+                        mv.addEventListener('load', () => { clearTimeout(timeout); resolve(); }, { once: true });
+                        mv.addEventListener('error', () => { clearTimeout(timeout); reject(new Error('load error')); }, { once: true });
+                    }).catch(err => {
+                        btn.disabled = false;
+                        btn.classList.remove('loading');
+                        showToast(err.message === 'timeout'
+                            ? 'Model taking too long — check file path'
+                            : 'Failed to load 3D model');
+                        throw err;
+                    });
+                }
+
+                toast.classList.remove('show'); // clear loading toast
+
+                /* Ensure model-viewer container is briefly made fully visible
+                   so activateAR() has a proper DOM target */
+                const mvc2 = card.querySelector(`#mvc-${i}`);
+                mvc2.style.opacity = '1';
+                mvc2.style.pointerEvents = 'auto';
+
+                try {
+                    await mv.activateAR();
+                } catch (err) {
+                    console.warn('activateAR failed:', err);
+                    showToast('Could not start AR — try a different browser');
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                }
+
+                // restore hidden state after a tick
+                requestAnimationFrame(() => {
+                    mvc2.style.opacity = '0.001';
+                    mvc2.style.pointerEvents = 'none';
+                });
+            });
+        });
+
+        /* ── Scroll dots ── */
+        const dots = dotsEl.querySelectorAll('.dot');
+        grid.addEventListener('scroll', () => {
+            const center = grid.scrollLeft + grid.clientWidth / 2;
+            let closest = 0, minDist = Infinity;
+            grid.querySelectorAll('.landmark-card').forEach((card, i) => {
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                const dist = Math.abs(center - cardCenter);
+                if (dist < minDist) { minDist = dist; closest = i; }
+            });
+            dots.forEach((d, i) => d.classList.toggle('active', i === closest));
+        }, { passive: true });
+    </script>
+</body>
+</html>
