@@ -4,306 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Explore Japan · Japanese Cuisine</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://unpkg.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-
     <style>
         :root {
-            --washi:       #f5ede0;
-            --ink-deep:    #100a04;
-            --crimson:     #8b1a1a;
-            --crimson-mid: #b52020;
-            --gold-lt:     #c4a030;
-            --gold-pale:   #e8d080;
+            --washi: #f5ede0; --ink-deep: #100a04;
+            --crimson: #8b1a1a; --crimson-mid: #b52020;
+            --gold-lt: #c4a030; --gold-pale: #e8d080;
         }
         *, *::before, *::after { box-sizing: border-box; }
-
         body {
-            margin: 0;
-            background-color: var(--ink-deep);
-            color: var(--washi);
+            margin: 0; background: var(--ink-deep); color: var(--washi);
             font-family: 'Noto Sans JP', sans-serif;
-            height: 100svh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            height: 100svh; overflow: hidden;
+            display: flex; flex-direction: column;
         }
         body::before {
-            content: '';
-            position: fixed; inset: 0;
+            content: ''; position: fixed; inset: 0;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='0' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='40' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='10' cy='20' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='30' cy='20' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3C/svg%3E");
             opacity: 0.055; pointer-events: none; z-index: 0;
         }
         body::after {
-            content: '';
-            position: fixed; inset: 0;
-            background:
-                radial-gradient(ellipse 80% 50% at 15% 85%, rgba(139,26,26,0.14) 0%, transparent 65%),
-                radial-gradient(ellipse 60% 70% at 85% 15%, rgba(154,120,32,0.10) 0%, transparent 60%);
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(ellipse 80% 50% at 15% 85%, rgba(139,26,26,0.14) 0%, transparent 65%),
+                        radial-gradient(ellipse 60% 70% at 85% 15%, rgba(154,120,32,0.10) 0%, transparent 60%);
             pointer-events: none; z-index: 0;
         }
 
-        /* ─── Header ─────────────────────────────── */
+        /* Header */
         .nav-header {
-            padding: max(env(safe-area-inset-top), 24px) 20px 18px;
-            text-align: center;
-            border-bottom: 1px solid rgba(196,160,48,0.18);
-            flex-shrink: 0;
-            position: relative; z-index: 10;
+            padding: max(env(safe-area-inset-top),24px) 20px 18px;
+            text-align: center; border-bottom: 1px solid rgba(196,160,48,0.18);
+            flex-shrink: 0; position: relative; z-index: 10;
         }
         .nav-header::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            content: ''; position: absolute; top:0; left:0; right:0; height:3px;
             background: linear-gradient(90deg, transparent, var(--crimson-mid), var(--gold-lt), var(--crimson-mid), transparent);
         }
         .header-mon {
-            width: 40px; height: 40px;
-            border: 1px solid rgba(196,160,48,0.35);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 10px;
-            animation: monSpin 20s linear infinite;
+            width:40px; height:40px; border:1px solid rgba(196,160,48,0.35);
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            margin:0 auto 10px; animation:monSpin 20s linear infinite;
         }
-        .header-mon span {
-            font-size: 20px; color: var(--crimson-mid);
-            animation: monSpin 20s linear infinite reverse; display: block;
-        }
-        @keyframes monSpin { to { transform: rotate(360deg); } }
+        .header-mon span { font-size:20px; color:var(--crimson-mid); animation:monSpin 20s linear infinite reverse; display:block; }
+        @keyframes monSpin { to { transform:rotate(360deg); } }
         .nav-header h1 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(22px, 5.5vw, 34px);
-            margin: 0 0 4px; font-weight: 600; letter-spacing: 0.12em;
-            background: linear-gradient(160deg, var(--washi) 30%, var(--gold-pale) 65%, var(--washi) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family:'Cinzel',serif; font-size:clamp(22px,5.5vw,34px);
+            margin:0 0 4px; font-weight:600; letter-spacing:0.12em;
+            background:linear-gradient(160deg,var(--washi) 30%,var(--gold-pale) 65%,var(--washi) 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
         }
-        .nav-header-jp {
-            font-family: 'Noto Serif JP', serif;
-            font-size: 12px; font-weight: 300;
-            color: rgba(245,237,224,0.4); letter-spacing: 5px;
-            display: block; margin-bottom: 5px;
-        }
-        .nav-header p {
-            font-size: 9px; font-family: 'Noto Sans JP', sans-serif;
-            text-transform: uppercase; letter-spacing: 4px;
-            color: rgba(245,237,224,0.3); margin: 0;
-        }
-        .brush-divider {
-            width: 80px; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--crimson-mid), transparent);
-            margin: 10px auto 0;
-        }
+        .nav-header-jp { font-family:'Noto Serif JP',serif; font-size:12px; font-weight:300; color:rgba(245,237,224,0.4); letter-spacing:5px; display:block; margin-bottom:5px; }
+        .nav-header p { font-size:9px; text-transform:uppercase; letter-spacing:4px; color:rgba(245,237,224,0.3); margin:0; }
+        .brush-divider { width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--crimson-mid),transparent); margin:10px auto 0; }
 
-        /* ─── Grid ─────────────────────────────────── */
+        /* Grid — scroll-snap container */
         .explorer-grid {
-            flex: 1;
-            display: flex; align-items: center;
-            overflow-x: auto; overflow-y: hidden;
-            padding: 24px 20px; gap: 14px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-x: contain;
-            scrollbar-width: none;
-            position: relative; z-index: 10;
+            flex:1; display:flex; align-items:center;
+            overflow-x:auto; overflow-y:hidden;
+            padding:24px 20px; gap:14px;
+            scroll-snap-type:x mandatory;
+            -webkit-overflow-scrolling:touch;
+            overscroll-behavior-x:contain;
+            scrollbar-width:none;
+            position:relative; z-index:10;
+            /* KEY: allow browser to handle x-scroll by default;
+               JS will override only during a pinch */
+            touch-action: pan-x;
         }
-        .explorer-grid::-webkit-scrollbar { display: none; }
+        .explorer-grid::-webkit-scrollbar { display:none; }
+        /* When a pinch is active we lock the grid completely */
+        .explorer-grid.pinch-lock { touch-action: none; overflow-x: hidden; }
 
-        /* ─── Card ──────────────────────────────────── */
+        /* Card */
         .landmark-card {
-            flex: 0 0 min(82vw, 348px);
-            height: min(60vh, 508px);
-            background: #100a04;
-            border: 1px solid rgba(196,160,48,0.2);
-            border-top: 2px solid var(--crimson);
-            border-radius: 1px;
-            position: relative;
-            scroll-snap-align: center;
-            display: flex; flex-direction: column;
-            overflow: hidden;
-            transform: translateZ(0);
-            transition: border-color 0.25s, box-shadow 0.25s;
+            flex:0 0 min(82vw,348px); height:min(60vh,508px);
+            background:#100a04;
+            border:1px solid rgba(196,160,48,0.2); border-top:2px solid var(--crimson);
+            border-radius:1px; position:relative; scroll-snap-align:center;
+            display:flex; flex-direction:column;
+            overflow:hidden; transform:translateZ(0);
+            transition:border-color 0.25s,box-shadow 0.25s;
         }
-        .landmark-card:hover {
-            border-color: rgba(196,160,48,0.4);
-            border-top-color: var(--crimson-mid);
-            box-shadow: 0 8px 32px rgba(139,26,26,0.28), 0 0 0 1px rgba(196,160,48,0.12);
-        }
-        .landmark-card::before {
-            content: '';
-            position: absolute; inset: 8px;
-            border: 1px solid rgba(196,160,48,0.09);
-            pointer-events: none; z-index: 3;
-        }
+        .landmark-card:hover { border-color:rgba(196,160,48,0.4); border-top-color:var(--crimson-mid); box-shadow:0 8px 32px rgba(139,26,26,0.28),0 0 0 1px rgba(196,160,48,0.12); }
+        .landmark-card::before { content:''; position:absolute; inset:8px; border:1px solid rgba(196,160,48,0.09); pointer-events:none; z-index:3; }
 
-        /* ─── Thumbnail ─────────────────────────────── */
+        /* Thumb */
         .thumb-wrap {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: radial-gradient(ellipse at 50% 60%, #1a150a 0%, #080604 100%);
-            /* CRITICAL: touch-action none so browser doesn't swallow pinch */
+            flex:1; position:relative; overflow:hidden;
+            background:radial-gradient(ellipse at 50% 60%,#1a150a 0%,#080604 100%);
+            /* touch-action none: THIS element handles all touches itself */
             touch-action: none;
+            -webkit-user-select: none; user-select: none;
             -webkit-touch-callout: none;
-            user-select: none;
-            -webkit-user-select: none;
-            cursor: grab;
         }
-        .thumb-wrap:active { cursor: grabbing; }
         .thumb-wrap img {
-            width: 100%; height: 100%;
-            object-fit: cover; display: block;
-            /* origin at 0 0 — we handle translate ourselves for correct math */
-            transform-origin: 0 0;
+            width:100%; height:100%; object-fit:cover; display:block;
+            transform-origin: 0 0;   /* MUST be top-left for our math */
             will-change: transform;
             pointer-events: none;
             -webkit-user-drag: none;
-            user-select: none;
+            -webkit-user-select: none;
         }
         .thumb-wrap::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(to bottom, transparent 45%, rgba(16,10,4,0.88) 100%);
-            pointer-events: none;
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(to bottom,transparent 45%,rgba(16,10,4,0.88) 100%);
+            pointer-events:none; z-index:1;
         }
         .card-badge {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(16,10,4,0.82);
-            border: 1px solid rgba(196,160,48,0.2);
-            color: var(--gold-lt);
-            font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
-            padding: 3px 9px; z-index: 5;
+            position:absolute; top:10px; right:10px;
+            background:rgba(16,10,4,0.82); border:1px solid rgba(196,160,48,0.2);
+            color:var(--gold-lt); font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px;
+            padding:3px 9px; z-index:5;
         }
         .zoom-hint {
-            position: absolute; bottom: 38px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(16,10,4,0.75);
-            border: 1px solid rgba(196,160,48,0.25);
-            color: rgba(245,237,224,0.65);
-            font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
-            padding: 5px 12px; border-radius: 1px;
-            pointer-events: none; z-index: 6;
-            opacity: 1; transition: opacity 1s;
-            white-space: nowrap;
+            position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
+            background:rgba(16,10,4,0.80); border:1px solid rgba(196,160,48,0.3);
+            color:rgba(245,237,224,0.75); font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px;
+            padding:5px 13px; pointer-events:none; z-index:6;
+            opacity:1; transition:opacity 1s; white-space:nowrap;
         }
-        .zoom-hint.hidden { opacity: 0; }
+        .zoom-hint.gone { opacity:0; }
 
-        /* ─── Info Panel ──────────────────────────── */
-        .landmark-info {
-            padding: 13px 16px 15px;
-            background: rgba(16,10,4,0.97);
-            border-top: 1px solid rgba(196,160,48,0.12);
-            flex-shrink: 0; position: relative;
-        }
-        .landmark-info::before {
-            content: '';
-            position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-            background: var(--crimson);
-        }
-        .landmark-name {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(18px, 4.5vw, 23px);
-            font-weight: 600; color: var(--washi);
-            margin-bottom: 2px; line-height: 1.15; letter-spacing: 0.02em;
-        }
-        .landmark-city {
-            font-family: 'Noto Serif JP', serif;
-            font-size: 9px; color: var(--gold-lt);
-            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 11px;
-        }
+        /* Info */
+        .landmark-info { padding:13px 16px 15px; background:rgba(16,10,4,0.97); border-top:1px solid rgba(196,160,48,0.12); flex-shrink:0; position:relative; }
+        .landmark-info::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--crimson); }
+        .landmark-name { font-family:'Cormorant Garamond',serif; font-size:clamp(18px,4.5vw,23px); font-weight:600; color:var(--washi); margin-bottom:2px; line-height:1.15; }
+        .landmark-city { font-family:'Noto Serif JP',serif; font-size:9px; color:var(--gold-lt); text-transform:uppercase; letter-spacing:3px; margin-bottom:11px; }
 
-        /* ─── AR Button ───────────────────────────── */
+        /* AR btn */
         .ar-btn {
-            width: 100%; background: var(--crimson);
-            border: none; padding: 12px; border-radius: 1px;
-            color: var(--washi); font-family: 'Cinzel', serif;
-            font-weight: 600; font-size: 11px; letter-spacing: 3px;
-            text-transform: uppercase; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
-            min-height: 44px; position: relative; overflow: hidden;
+            width:100%; background:var(--crimson); border:none; padding:12px; border-radius:1px;
+            color:var(--washi); font-family:'Cinzel',serif; font-weight:600; font-size:11px;
+            letter-spacing:3px; text-transform:uppercase; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            transition:box-shadow 0.18s,transform 0.12s; min-height:44px; position:relative; overflow:hidden;
         }
-        .ar-btn::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, #6a1212 0%, var(--crimson) 100%);
-            opacity: 0; transition: opacity 0.18s;
-        }
-        .ar-btn:hover::before { opacity: 1; }
-        .ar-btn:hover { box-shadow: 0 4px 18px rgba(139,26,26,0.5); }
-        .ar-btn:active { transform: scale(0.97); }
-        .ar-btn > * { position: relative; z-index: 1; }
-        .ar-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .ar-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#6a1212,var(--crimson)); opacity:0; transition:opacity 0.18s; }
+        .ar-btn:hover::before { opacity:1; }
+        .ar-btn:hover { box-shadow:0 4px 18px rgba(139,26,26,0.5); }
+        .ar-btn:active { transform:scale(0.97); }
+        .ar-btn > * { position:relative; z-index:1; }
+        .ar-btn:disabled { opacity:0.55; cursor:not-allowed; }
 
-        /* ─── Hidden model-viewer ─────────────────── */
-        .mv-container {
-            position: absolute; width: 1px; height: 1px;
-            overflow: hidden; opacity: 0.001;
-            pointer-events: none; top: 0; left: 0; z-index: -1;
-        }
-        .mv-container model-viewer { width: 1px; height: 1px; display: block; }
+        /* Hidden model-viewer */
+        .mv-container { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0.001; pointer-events:none; top:0; left:0; z-index:-1; }
+        .mv-container model-viewer { width:1px; height:1px; display:block; }
 
-        /* ─── Toast ───────────────────────────────── */
+        /* Toast */
         .toast {
-            position: fixed;
-            bottom: max(env(safe-area-inset-bottom), 20px);
-            left: 50%; transform: translateX(-50%) translateY(80px);
-            background: rgba(28,17,8,0.95);
-            border: 1px solid rgba(196,160,48,0.3);
-            color: var(--washi); font-family: 'Cinzel', serif;
-            font-size: 11px; letter-spacing: 1.5px;
-            padding: 12px 22px; border-radius: 1px;
-            white-space: nowrap;
-            transition: transform 0.35s ease, opacity 0.35s;
-            opacity: 0; z-index: 999;
-            backdrop-filter: blur(12px);
+            position:fixed; bottom:max(env(safe-area-inset-bottom),20px);
+            left:50%; transform:translateX(-50%) translateY(80px);
+            background:rgba(28,17,8,0.95); border:1px solid rgba(196,160,48,0.3);
+            color:var(--washi); font-family:'Cinzel',serif; font-size:11px; letter-spacing:1.5px;
+            padding:12px 22px; white-space:nowrap;
+            transition:transform 0.35s,opacity 0.35s; opacity:0; z-index:999;
+            backdrop-filter:blur(12px);
         }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-        /* ─── Back Button ─────────────────────────── */
+        /* Back */
         .back-btn {
-            position: fixed;
-            top: max(env(safe-area-inset-top), 14px); left: 16px;
-            background: rgba(28,17,8,0.78);
-            border: 1px solid rgba(196,160,48,0.25);
-            color: rgba(245,237,224,0.8);
-            padding: 8px 16px; border-radius: 1px;
-            font-family: 'Cinzel', serif; font-size: 10px;
-            text-decoration: none; z-index: 200;
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            letter-spacing: 2px; min-height: 36px;
-            display: flex; align-items: center; gap: 6px;
-            transition: border-color 0.18s, color 0.18s;
+            position:fixed; top:max(env(safe-area-inset-top),14px); left:16px;
+            background:rgba(28,17,8,0.78); border:1px solid rgba(196,160,48,0.25);
+            color:rgba(245,237,224,0.8); padding:8px 16px;
+            font-family:'Cinzel',serif; font-size:10px;
+            text-decoration:none; z-index:200; backdrop-filter:blur(12px);
+            letter-spacing:2px; min-height:36px; display:flex; align-items:center; gap:6px;
+            transition:border-color 0.18s,color 0.18s;
         }
-        .back-btn:hover { border-color: var(--crimson-mid); color: var(--washi); }
+        .back-btn:hover { border-color:var(--crimson-mid); color:var(--washi); }
 
-        /* ─── Scroll dots ────────────────────────── */
-        .scroll-dots {
-            flex-shrink: 0;
-            display: flex; justify-content: center; align-items: center;
-            gap: 7px;
-            padding: 10px 0 max(env(safe-area-inset-bottom), 14px);
-            position: relative; z-index: 10;
-        }
-        .dot {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: rgba(196,160,48,0.2);
-            transition: background 0.3s, transform 0.3s, width 0.3s, border-radius 0.3s;
-        }
-        .dot.active {
-            background: var(--crimson-mid); transform: scale(1.2);
-            width: 18px; border-radius: 3px;
-        }
+        /* Dots */
+        .scroll-dots { flex-shrink:0; display:flex; justify-content:center; align-items:center; gap:7px; padding:10px 0 max(env(safe-area-inset-bottom),14px); position:relative; z-index:10; }
+        .dot { width:5px; height:5px; border-radius:50%; background:rgba(196,160,48,0.2); transition:background 0.3s,transform 0.3s,width 0.3s,border-radius 0.3s; }
+        .dot.active { background:var(--crimson-mid); transform:scale(1.2); width:18px; border-radius:3px; }
     </style>
 </head>
 <body>
-
     <a href="FunZone.html" class="back-btn">← Back</a>
-
     <div class="nav-header">
         <div class="header-mon"><span>✿</span></div>
         <h1>Explore Japan</h1>
@@ -311,307 +193,254 @@
         <div class="brush-divider"></div>
         <p>Augmented Reality Landmarks</p>
     </div>
-
     <div class="explorer-grid" id="grid"></div>
     <div class="scroll-dots" id="dots"></div>
     <div class="toast" id="toast"></div>
 
-    <script>
-    const landmarks = [
-        { name: "Tokyo Skytree",       city: "Tokyo", folder: "tokyoskytree",       file: "tokyoskytree",       hasUsdz: true  },
-        { name: "Japanese Torii Gate", city: "Japan", folder: "Japanese Torii Gate", file: "Japanese Torii Gate", hasUsdz: true  },
-        { name: "Japanese Castle",     city: "Japan", folder: "japanesecastle",       file: "japanesecastle",       hasUsdz: true  },
-        { name: "Nijo Castle",         city: "Kyoto", folder: "Nijo Castle japan",    file: "Nijo Castle japan",    hasUsdz: false },
-        { name: "Pagoda",              city: "Japan", folder: "pagoda",               file: "pagoda",               hasUsdz: true  },
-        { name: "Kimono Dress",        city: "Japan", folder: "dress",                file: "dress",                hasUsdz: true  },
-    ];
+<script>
+const landmarks = [
+    { name:"Tokyo Skytree",       city:"Tokyo", folder:"tokyoskytree",        file:"tokyoskytree",        hasUsdz:true  },
+    { name:"Japanese Torii Gate", city:"Japan", folder:"Japanese Torii Gate", file:"Japanese Torii Gate", hasUsdz:true  },
+    { name:"Japanese Castle",     city:"Japan", folder:"japanesecastle",       file:"japanesecastle",       hasUsdz:true  },
+    { name:"Nijo Castle",         city:"Kyoto", folder:"Nijo Castle japan",    file:"Nijo Castle japan",    hasUsdz:false },
+    { name:"Pagoda",              city:"Japan", folder:"pagoda",               file:"pagoda",               hasUsdz:true  },
+    { name:"Kimono Dress",        city:"Japan", folder:"dress",                file:"dress",               hasUsdz:true  },
+];
 
-    const grid   = document.getElementById('grid');
-    const dotsEl = document.getElementById('dots');
-    const toast  = document.getElementById('toast');
+const grid   = document.getElementById('grid');
+const dotsEl = document.getElementById('dots');
+const toastEl= document.getElementById('toast');
+let toastTimer;
 
-    let toastTimer;
-    function showToast(msg, duration = 3000) {
-        toast.textContent = msg;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
-    }
+function showToast(msg, dur=3000) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toastEl.classList.remove('show'), dur);
+}
 
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent)||
+              (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 
-    function getARMode() {
-        if (isIOS) return 'quicklook';
-        if (navigator.xr) return 'webxr';
-        if (/android/i.test(navigator.userAgent)) return 'scene-viewer';
-        return 'none';
-    }
-    const arMode = getARMode();
+function getARMode() {
+    if (isIOS) return 'quicklook';
+    if (navigator.xr) return 'webxr';
+    if (/android/i.test(navigator.userAgent)) return 'scene-viewer';
+    return 'none';
+}
+const arMode = getARMode();
+const cityJP = {'Tokyo':'東京','Kyoto':'京都','Japan':'日本'};
 
-    const cityJP = { 'Tokyo': '東京', 'Kyoto': '京都', 'Japan': '日本' };
-    const viewers = [];
+landmarks.forEach((l, i) => {
+    const imgPath = `ExploreJapan/${l.folder}/${l.file}.png`;
+    const glbSrc  = `ExploreJapan/${l.folder}/${l.file}.glb`;
+    const usdzSrc = `ExploreJapan/${l.folder}/${l.file}.usdz`;
+    const jpCity  = cityJP[l.city]||l.city;
 
-    landmarks.forEach((l, i) => {
-        const imgPath = `ExploreJapan/${l.folder}/${l.file}.png`;
-        const glbSrc  = `ExploreJapan/${l.folder}/${l.file}.glb`;
-        const usdzSrc = `ExploreJapan/${l.folder}/${l.file}.usdz`;
-        const jpCity  = cityJP[l.city] || l.city;
+    /* ── Card ── */
+    const card = document.createElement('div');
+    card.className = 'landmark-card';
+    card.innerHTML = `
+        <div class="thumb-wrap" id="tw${i}">
+            <img src="${imgPath}" alt="${l.name}" id="ti${i}" loading="${i===0?'eager':'lazy'}">
+            <div class="card-badge">${String(i+1).padStart(2,'0')} / ${String(landmarks.length).padStart(2,'0')}</div>
+            <div class="zoom-hint" id="zh${i}">✦ PINCH TO ZOOM</div>
+        </div>
+        <div class="landmark-info">
+            <div class="landmark-name">${l.name}</div>
+            <div class="landmark-city">${l.city} &nbsp;·&nbsp; ${jpCity}</div>
+            <button class="ar-btn" id="ab${i}"><span>✦</span><span>View in Real World</span></button>
+        </div>
+        <div class="mv-container" id="mc${i}"></div>`;
+    grid.appendChild(card);
 
-        /* ── Card ── */
-        const card = document.createElement('div');
-        card.className = 'landmark-card';
-        card.dataset.index = i;
-        card.innerHTML = `
-            <div class="thumb-wrap" id="thumb-${i}">
-                <img src="${imgPath}" alt="${l.name}" id="img-${i}" loading="${i === 0 ? 'eager' : 'lazy'}">
-                <div class="card-badge">${String(i+1).padStart(2,'0')} / ${String(landmarks.length).padStart(2,'0')}</div>
-                <div class="zoom-hint" id="hint-${i}">✦ PINCH TO ZOOM</div>
-            </div>
-            <div class="landmark-info">
-                <div class="landmark-name">${l.name}</div>
-                <div class="landmark-city">${l.city} &nbsp;·&nbsp; ${jpCity}</div>
-                <button class="ar-btn" id="arbtn-${i}">
-                    <span>✦</span><span class="btn-label">View in Real World</span>
-                </button>
-            </div>
-            <div class="mv-container" id="mvc-${i}"></div>
-        `;
-        grid.appendChild(card);
-
-        /* ── model-viewer ── */
-        const mvc = card.querySelector(`#mvc-${i}`);
-        const mv  = document.createElement('model-viewer');
-        mv.setAttribute('src', glbSrc);
-        mv.setAttribute('ar', '');
-        mv.setAttribute('ar-modes', isIOS && l.hasUsdz ? 'quick-look webxr scene-viewer' : 'webxr scene-viewer quick-look');
-        if (isIOS && l.hasUsdz) mv.setAttribute('ios-src', usdzSrc);
-        mv.setAttribute('ar-placement', 'floor');
-        mv.setAttribute('ar-scale', 'fixed');
-        mv.setAttribute('camera-controls', '');
-        mv.setAttribute('touch-action', 'none');
-        mv.setAttribute('interaction-prompt', 'none');
-        mv.setAttribute('shadow-intensity', '1');
-        mv.setAttribute('exposure', '1.1');
-        mv.setAttribute('environment-image', 'neutral');
-        mv.setAttribute('loading', i === 0 ? 'eager' : 'lazy');
-        mv.setAttribute('reveal', 'auto');
-        mv.style.cssText = 'width:1px;height:1px;display:block;';
-        mvc.appendChild(mv);
-        viewers.push(mv);
-
-        mv._loaded = false; mv._errored = false;
-        mv.addEventListener('load',  () => { mv._loaded = true; });
-        mv.addEventListener('error', () => { mv._errored = true; });
-        mv.addEventListener('ar-status', (e) => {
-            const btn = document.getElementById(`arbtn-${i}`);
-            if (['session-started','not-presenting','failed'].includes(e.detail.status)) {
-                btn.disabled = false;
-                if (e.detail.status === 'failed') showToast('AR unavailable on this device');
-            }
-        });
-
-        /* ── Scroll dot ── */
-        const dot = document.createElement('div');
-        dot.className = 'dot' + (i === 0 ? ' active' : '');
-        dotsEl.appendChild(dot);
-
-        /* ════════════════════════════════════════════
-           PINCH-TO-ZOOM  (complete rewrite)
-           Uses transform: translate(tx,ty) scale(s)
-           with transform-origin: 0 0 — this is the
-           only approach that works correctly without
-           jitter or offset drift.
-        ════════════════════════════════════════════ */
-        const wrap = card.querySelector(`#thumb-${i}`);
-        const img  = card.querySelector(`#img-${i}`);
-        const hint = card.querySelector(`#hint-${i}`);
-
-        // fade hint after 3s
-        setTimeout(() => hint.classList.add('hidden'), 3000);
-
-        let curScale = 1;
-        let curTx = 0, curTy = 0;   // current translation (px)
-        const MIN_SCALE = 1, MAX_SCALE = 5;
-
-        // pinch tracking
-        let pinchStartDist  = 0;
-        let pinchStartScale = 1;
-        let pinchStartTx = 0, pinchStartTy = 0;
-        let pinchStartMidX = 0, pinchStartMidY = 0; // mid in ELEMENT coords
-
-        // pan tracking (single finger when zoomed)
-        let panStartX = 0, panStartY = 0;
-        let panStartTx = 0, panStartTy = 0;
-
-        let mode = 'idle'; // 'idle' | 'pinch' | 'pan'
-
-        function setTransform(s, tx, ty, animated) {
-            // clamp translation so image never goes outside its container
-            const W = wrap.clientWidth;
-            const H = wrap.clientHeight;
-            const maxTx = W * (s - 1);
-            const maxTy = H * (s - 1);
-            tx = Math.max(-maxTx, Math.min(0, tx));
-            ty = Math.max(-maxTy, Math.min(0, ty));
-
-            curScale = s; curTx = tx; curTy = ty;
-            img.style.transition = animated ? 'transform 0.22s ease' : 'none';
-            // transform-origin is 0 0, so: translate first, then scale
-            img.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    /* ── model-viewer ── */
+    const mc = card.querySelector(`#mc${i}`);
+    const mv = document.createElement('model-viewer');
+    mv.setAttribute('src', glbSrc);
+    mv.setAttribute('ar','');
+    mv.setAttribute('ar-modes', isIOS&&l.hasUsdz ? 'quick-look webxr scene-viewer' : 'webxr scene-viewer quick-look');
+    if (isIOS&&l.hasUsdz) mv.setAttribute('ios-src', usdzSrc);
+    mv.setAttribute('ar-placement','floor');
+    mv.setAttribute('ar-scale','fixed');
+    mv.setAttribute('camera-controls','');
+    mv.setAttribute('touch-action','none');
+    mv.setAttribute('interaction-prompt','none');
+    mv.setAttribute('shadow-intensity','1');
+    mv.setAttribute('exposure','1.1');
+    mv.setAttribute('environment-image','neutral');
+    mv.setAttribute('loading', i===0?'eager':'lazy');
+    mv.setAttribute('reveal','auto');
+    mv.style.cssText='width:1px;height:1px;display:block;';
+    mc.appendChild(mv);
+    mv._loaded=false; mv._errored=false;
+    mv.addEventListener('load',  ()=>{ mv._loaded=true; });
+    mv.addEventListener('error', ()=>{ mv._errored=true; });
+    mv.addEventListener('ar-status', e=>{
+        const btn=card.querySelector(`#ab${i}`);
+        if(['session-started','not-presenting','failed'].includes(e.detail.status)){
+            btn.disabled=false;
+            if(e.detail.status==='failed') showToast('AR unavailable on this device');
         }
-
-        function resetTransform(animated) {
-            setTransform(1, 0, 0, animated);
-        }
-
-        function getTouchMid(touches) {
-            const t1 = touches[0], t2 = touches[1];
-            const rect = wrap.getBoundingClientRect();
-            return {
-                x: ((t1.clientX + t2.clientX) / 2) - rect.left,
-                y: ((t1.clientY + t2.clientY) / 2) - rect.top,
-                dist: Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
-            };
-        }
-
-        /* ── touchstart — NON-passive so we can preventDefault ── */
-        wrap.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                e.preventDefault(); // stop scroll AND browser pinch-zoom
-                mode = 'pinch';
-                hint.classList.add('hidden');
-
-                const mid = getTouchMid(e.touches);
-                pinchStartDist  = mid.dist;
-                pinchStartScale = curScale;
-                pinchStartTx    = curTx;
-                pinchStartTy    = curTy;
-                pinchStartMidX  = mid.x;
-                pinchStartMidY  = mid.y;
-
-            } else if (e.touches.length === 1) {
-                if (curScale > 1) {
-                    e.preventDefault(); // pan mode — stop card swipe
-                    mode = 'pan';
-                    panStartX  = e.touches[0].clientX;
-                    panStartY  = e.touches[0].clientY;
-                    panStartTx = curTx;
-                    panStartTy = curTy;
-                } else {
-                    mode = 'idle';
-                }
-            }
-        }, { passive: false }); // MUST be false
-
-        /* ── touchmove — NON-passive so we can preventDefault ── */
-        wrap.addEventListener('touchmove', (e) => {
-            if (mode === 'pinch' && e.touches.length === 2) {
-                e.preventDefault();
-
-                const mid = getTouchMid(e.touches);
-                const ratio     = mid.dist / pinchStartDist;
-                const newScale  = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartScale * ratio));
-
-                // We want the point under the pinch midpoint to stay fixed.
-                // Formula (transform-origin 0,0):
-                //   newTx = pinchStartTx + (pinchStartMidX)(pinchStartScale - newScale) + (mid.x - pinchStartMidX)
-                //   newTy = pinchStartTy + (pinchStartMidY)(pinchStartScale - newScale) + (mid.y - pinchStartMidY)
-                const newTx = pinchStartTx
-                    + pinchStartMidX * (pinchStartScale - newScale)
-                    + (mid.x - pinchStartMidX);
-                const newTy = pinchStartTy
-                    + pinchStartMidY * (pinchStartScale - newScale)
-                    + (mid.y - pinchStartMidY);
-
-                setTransform(newScale, newTx, newTy, false);
-
-            } else if (mode === 'pan' && e.touches.length === 1) {
-                e.preventDefault();
-
-                const dx = e.touches[0].clientX - panStartX;
-                const dy = e.touches[0].clientY - panStartY;
-                setTransform(curScale, panStartTx + dx, panStartTy + dy, false);
-            }
-        }, { passive: false }); // MUST be false
-
-        wrap.addEventListener('touchend', (e) => {
-            if (mode === 'pinch' && e.touches.length < 2) {
-                // snap back if pinched to near 1×
-                if (curScale < 1.08) resetTransform(true);
-                mode = e.touches.length === 1 ? 'pan' : 'idle';
-                if (mode === 'pan') {
-                    panStartX  = e.touches[0]?.clientX ?? 0;
-                    panStartY  = e.touches[0]?.clientY ?? 0;
-                    panStartTx = curTx; panStartTy = curTy;
-                }
-            } else if (e.touches.length === 0) {
-                mode = 'idle';
-            }
-        }, { passive: true });
-
-        /* double-tap to reset */
-        let lastTap = 0;
-        wrap.addEventListener('touchend', (e) => {
-            if (e.changedTouches.length === 1 && e.touches.length === 0) {
-                const now = Date.now();
-                if (now - lastTap < 300) resetTransform(true);
-                lastTap = now;
-            }
-        }, { passive: true });
-
-        /* ── AR Button ── */
-        card.querySelector(`#arbtn-${i}`).addEventListener('click', async () => {
-            const btn = document.getElementById(`arbtn-${i}`);
-            if (arMode === 'none') { showToast('AR not supported on this device/browser'); return; }
-            if (mv._errored)       { showToast('Model failed to load — check file path'); return; }
-
-            btn.disabled = true;
-
-            if (!mv._loaded) {
-                showToast('Loading model…', 15000);
-                await new Promise((resolve, reject) => {
-                    const t = setTimeout(() => reject(new Error('timeout')), 15000);
-                    mv.addEventListener('load',  () => { clearTimeout(t); resolve(); }, { once: true });
-                    mv.addEventListener('error', () => { clearTimeout(t); reject(new Error('error')); }, { once: true });
-                }).catch(err => {
-                    btn.disabled = false;
-                    showToast(err.message === 'timeout' ? 'Model taking too long' : 'Failed to load 3D model');
-                    throw err;
-                });
-            }
-
-            toast.classList.remove('show');
-            const mvc2 = card.querySelector(`#mvc-${i}`);
-            mvc2.style.opacity = '1';
-            mvc2.style.pointerEvents = 'auto';
-
-            try {
-                await mv.activateAR();
-            } catch (err) {
-                console.warn('activateAR failed:', err);
-                showToast('Could not start AR — try a different browser');
-                btn.disabled = false;
-            }
-
-            requestAnimationFrame(() => {
-                mvc2.style.opacity = '0.001';
-                mvc2.style.pointerEvents = 'none';
-            });
-        });
     });
 
-    /* ── Scroll dots ── */
-    const dots = dotsEl.querySelectorAll('.dot');
-    grid.addEventListener('scroll', () => {
-        const center = grid.scrollLeft + grid.clientWidth / 2;
-        let closest = 0, minDist = Infinity;
-        grid.querySelectorAll('.landmark-card').forEach((card, i) => {
-            const d = Math.abs((card.offsetLeft + card.offsetWidth / 2) - center);
-            if (d < minDist) { minDist = d; closest = i; }
-        });
-        dots.forEach((d, i) => d.classList.toggle('active', i === closest));
-    }, { passive: true });
-    </script>
+    /* ── Scroll dot ── */
+    const dot = document.createElement('div');
+    dot.className = 'dot'+(i===0?' active':'');
+    dotsEl.appendChild(dot);
+
+    /* ════════════════════════════════════════════════════
+       PINCH-TO-ZOOM  —  the correct implementation
+       
+       Key insight: we must call e.preventDefault() on
+       touchstart AND touchmove, and we must do it at the
+       CAPTURE phase (3rd arg = {capture:true, passive:false})
+       so we beat the scroll container's listener.
+    ════════════════════════════════════════════════════ */
+    const wrap = card.querySelector(`#tw${i}`);
+    const img  = card.querySelector(`#ti${i}`);
+    const hint = card.querySelector(`#zh${i}`);
+
+    setTimeout(()=>hint.classList.add('gone'), 3500);
+
+    let S=1, TX=0, TY=0;            // current scale & translation
+    let mode='idle';                 // 'idle'|'pinch'|'pan'
+
+    // pinch snapshot
+    let P = {};
+    // pan snapshot
+    let N = {};
+
+    function clamp(s, tx, ty) {
+        const W=wrap.clientWidth, H=wrap.clientHeight;
+        return {
+            tx: Math.max(-(W*(s-1)), Math.min(0, tx)),
+            ty: Math.max(-(H*(s-1)), Math.min(0, ty))
+        };
+    }
+
+    function draw(s, tx, ty, anim) {
+        const c = clamp(s,tx,ty);
+        S=s; TX=c.tx; TY=c.ty;
+        img.style.transition = anim ? 'transform 0.22s ease' : 'none';
+        img.style.transform  = `translate(${TX}px,${TY}px) scale(${S})`;
+    }
+
+    function reset(anim) { draw(1,0,0,anim); }
+
+    function mid2(touches) {
+        const r=wrap.getBoundingClientRect();
+        const t1=touches[0], t2=touches[1];
+        return {
+            x: (t1.clientX+t2.clientX)/2 - r.left,
+            y: (t1.clientY+t2.clientY)/2 - r.top,
+            d: Math.hypot(t2.clientX-t1.clientX, t2.clientY-t1.clientY)
+        };
+    }
+
+    /* Use CAPTURE phase so we intercept before the scroll container */
+    wrap.addEventListener('touchstart', e => {
+        if (e.touches.length >= 2) {
+            /* Pinch starting — lock the grid so it can't scroll */
+            e.preventDefault();
+            e.stopPropagation();
+            grid.classList.add('pinch-lock');
+            mode = 'pinch';
+            hint.classList.add('gone');
+            const m = mid2(e.touches);
+            P = { d:m.d, x:m.x, y:m.y, S, TX, TY };
+
+        } else if (e.touches.length === 1) {
+            if (S > 1.05) {
+                /* Panning a zoomed image — prevent card swipe */
+                e.preventDefault();
+                e.stopPropagation();
+                mode = 'pan';
+                N = { cx:e.touches[0].clientX, cy:e.touches[0].clientY, TX, TY };
+            } else {
+                mode = 'idle';
+            }
+        }
+    }, { capture:true, passive:false });
+
+    wrap.addEventListener('touchmove', e => {
+        if (mode === 'pinch' && e.touches.length >= 2) {
+            e.preventDefault();
+            e.stopPropagation();
+            const m = mid2(e.touches);
+            const ns  = Math.max(1, Math.min(5, P.S * (m.d / P.d)));
+            // keep pinch midpoint stationary:
+            const ntx = P.TX + P.x*(P.S - ns) + (m.x - P.x);
+            const nty = P.TY + P.y*(P.S - ns) + (m.y - P.y);
+            draw(ns, ntx, nty, false);
+
+        } else if (mode === 'pan' && e.touches.length === 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            draw(S, N.TX+(e.touches[0].clientX-N.cx), N.TY+(e.touches[0].clientY-N.cy), false);
+        }
+    }, { capture:true, passive:false });
+
+    wrap.addEventListener('touchend', e => {
+        if (e.touches.length === 0) {
+            grid.classList.remove('pinch-lock');
+            if (S < 1.08) reset(true);
+            mode = 'idle';
+        } else if (mode==='pinch' && e.touches.length===1) {
+            /* One finger lifted from pinch → switch to pan */
+            mode = 'pan';
+            N = { cx:e.touches[0].clientX, cy:e.touches[0].clientY, TX, TY };
+        }
+    }, { passive:true });
+
+    /* Double-tap reset */
+    let lt=0;
+    wrap.addEventListener('touchend', e => {
+        if (e.touches.length===0 && e.changedTouches.length===1) {
+            const now=Date.now();
+            if (now-lt < 300) reset(true);
+            lt=now;
+        }
+    }, { passive:true });
+
+    /* ── AR button ── */
+    card.querySelector(`#ab${i}`).addEventListener('click', async () => {
+        const btn=card.querySelector(`#ab${i}`);
+        if (arMode==='none')  { showToast('AR not supported on this device/browser'); return; }
+        if (mv._errored)       { showToast('Model failed to load — check file path'); return; }
+        btn.disabled=true;
+        if (!mv._loaded) {
+            showToast('Loading model…',15000);
+            await new Promise((res,rej)=>{
+                const t=setTimeout(()=>rej(new Error('timeout')),15000);
+                mv.addEventListener('load',  ()=>{clearTimeout(t);res();},{once:true});
+                mv.addEventListener('error', ()=>{clearTimeout(t);rej(new Error('err'));},{once:true});
+            }).catch(err=>{
+                btn.disabled=false;
+                showToast(err.message==='timeout'?'Model taking too long':'Failed to load 3D model');
+                throw err;
+            });
+        }
+        toastEl.classList.remove('show');
+        const mc2=card.querySelector(`#mc${i}`);
+        mc2.style.opacity='1'; mc2.style.pointerEvents='auto';
+        try { await mv.activateAR(); }
+        catch(err){ console.warn('activateAR failed:',err); showToast('Could not start AR — try a different browser'); btn.disabled=false; }
+        requestAnimationFrame(()=>{ mc2.style.opacity='0.001'; mc2.style.pointerEvents='none'; });
+    });
+});
+
+/* ── Scroll dots ── */
+const dots = dotsEl.querySelectorAll('.dot');
+grid.addEventListener('scroll', ()=>{
+    const center=grid.scrollLeft+grid.clientWidth/2;
+    let closest=0, minD=Infinity;
+    grid.querySelectorAll('.landmark-card').forEach((c,i)=>{
+        const d=Math.abs((c.offsetLeft+c.offsetWidth/2)-center);
+        if(d<minD){minD=d;closest=i;}
+    });
+    dots.forEach((d,i)=>d.classList.toggle('active',i===closest));
+},{passive:true});
+</script>
 </body>
 </html>
