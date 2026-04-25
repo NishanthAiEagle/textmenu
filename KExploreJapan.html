@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Explore Japan · Japanese Cuisine</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <style>
+        :root {
+            --washi:       #f5ede0;
+            --washi-dark:  #ede0cc;
+            --ink:         #1c1108;
+            --ink-mid:     #2e1c0e;
+            --ink-deep:    #100a04;
+            --ink-light:   #6b5236;
+            --ink-faint:   #9a7d5a;
+            --crimson:     #8b1a1a;
+            --crimson-mid: #b52020;
+            --gold:        #9a7820;
+            --gold-lt:     #c4a030;
+            --gold-pale:   #e8d080;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background-color: var(--ink-deep);
+            color: var(--washi);
+            font-family: 'Noto Sans JP', sans-serif;
+            height: 100svh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Seigaiha wave watermark */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='0' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='40' cy='40' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='10' cy='20' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3Ccircle cx='30' cy='20' r='20' fill='none' stroke='%238b1a1a' stroke-width='0.7'/%3E%3C/svg%3E");
+            opacity: 0.055;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Ink wash radial glows */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 15% 85%, rgba(139,26,26,0.14) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 70% at 85% 15%, rgba(154,120,32,0.10) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ─── Header ─────────────────────────────── */
+        .nav-header {
+            padding: max(env(safe-area-inset-top), 24px) 20px 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(196,160,48,0.18);
+            flex-shrink: 0;
+            position: relative; z-index: 10;
+        }
+
+        /* Torii red + gold top bar */
+        .nav-header::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--crimson-mid), var(--gold-lt), var(--crimson-mid), transparent);
+        }
+
+        /* Spinning mon */
+        .header-mon {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(196,160,48,0.35);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px;
+            animation: monSpin 20s linear infinite;
+        }
+        .header-mon span {
+            font-size: 20px;
+            color: var(--crimson-mid);
+            animation: monSpin 20s linear infinite reverse;
+            display: block;
+        }
+        @keyframes monSpin { to { transform: rotate(360deg); } }
+
+        .nav-header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(22px, 5.5vw, 34px);
+            margin: 0 0 4px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            background: linear-gradient(160deg, var(--washi) 30%, var(--gold-pale) 65%, var(--washi) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-header-jp {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 12px; font-weight: 300;
+            color: rgba(245,237,224,0.4);
+            letter-spacing: 5px;
+            display: block; margin-bottom: 5px;
+        }
+
+        .nav-header p {
+            font-size: 9px;
+            font-family: 'Noto Sans JP', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: rgba(245,237,224,0.3);
+            margin: 0;
+        }
+
+        .brush-divider {
+            width: 80px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--crimson-mid), transparent);
+            margin: 10px auto 0;
+        }
+
+        /* ─── Scroll Grid ─────────────────────────── */
+        .explorer-grid {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 24px 20px;
+            gap: 14px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            scrollbar-width: none;
+            position: relative; z-index: 10;
+        }
+        .explorer-grid::-webkit-scrollbar { display: none; }
+
+        /* ─── Card ────────────────────────────────── */
+        .landmark-card {
+            flex: 0 0 min(82vw, 348px);
+            height: min(60vh, 508px);
+            background: #100a04;
+            border: 1px solid rgba(196,160,48,0.2);
+            border-top: 2px solid var(--crimson);
+            border-radius: 1px;
+            position: relative;
+            scroll-snap-align: center;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            will-change: transform;
+            transform: translateZ(0);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .landmark-card:hover {
+            border-color: rgba(196,160,48,0.4);
+            border-top-color: var(--crimson-mid);
+            box-shadow: 0 8px 32px rgba(139,26,26,0.28), 0 0 0 1px rgba(196,160,48,0.12);
+        }
+
+        /* Gold inner frame corners */
+        .landmark-card::before {
+            content: '';
+            position: absolute; inset: 8px;
+            border: 1px solid rgba(196,160,48,0.09);
+            pointer-events: none; z-index: 3;
+        }
+
+        /* ─── Thumbnail ─────────────────────────────── */
+        .thumb-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 50% 60%, #1a150a 0%, #080604 100%);
+        }
+        .thumb-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
+            transition: transform 0.5s ease;
+        }
+        .landmark-card:hover .thumb-wrap img { transform: scale(1.05); }
+
+        /* Ink wash vignette */
+        .thumb-wrap::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 45%, rgba(16,10,4,0.88) 100%);
+            pointer-events: none;
+        }
+
+        /* Card index badge */
+        .card-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(16,10,4,0.82);
+            border: 1px solid rgba(196,160,48,0.2);
+            color: var(--gold-lt);
+            font-family: 'Cinzel', serif;
+            font-size: 9px; letter-spacing: 1px;
+            padding: 3px 9px; z-index: 5;
+        }
+
+        /* ─── Info Panel ──────────────────────────── */
+        .landmark-info {
+            padding: 13px 16px 15px;
+            background: rgba(16,10,4,0.97);
+            border-top: 1px solid rgba(196,160,48,0.12);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Crimson left stripe */
+        .landmark-info::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: var(--crimson);
+        }
+
+        .landmark-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(18px, 4.5vw, 23px);
+            font-weight: 600; color: var(--washi);
+            margin-bottom: 2px; line-height: 1.15;
+            letter-spacing: 0.02em;
+        }
+
+        .landmark-city {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 9px; color: var(--gold-lt);
+            text-transform: uppercase; letter-spacing: 3px;
+            margin-bottom: 11px;
+        }
+
+        /* ─── AR Button ───────────────────────────── */
+        .ar-btn {
+            width: 100%;
+            background: var(--crimson);
+            border: none; padding: 12px;
+            border-radius: 1px;
+            color: var(--washi);
+            font-family: 'Cinzel', serif;
+            font-weight: 600; font-size: 11px;
+            letter-spacing: 3px; text-transform: uppercase;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+            min-height: 44px;
+            position: relative; overflow: hidden;
+        }
+        .ar-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, #6a1212 0%, var(--crimson) 100%);
+            opacity: 0; transition: opacity 0.18s;
+        }
+        .ar-btn:hover::before { opacity: 1; }
+        .ar-btn:hover { box-shadow: 0 4px 18px rgba(139,26,26,0.5); }
+        .ar-btn:active { transform: scale(0.97); }
+        .ar-btn > * { position: relative; z-index: 1; }
+
+        /* ─── Back Button ─────────────────────────── */
+        .back-btn {
+            position: fixed;
+            top: max(env(safe-area-inset-top), 14px); left: 16px;
+            background: rgba(28,17,8,0.78);
+            border: 1px solid rgba(196,160,48,0.25);
+            color: rgba(245,237,224,0.8);
+            padding: 8px 16px; border-radius: 1px;
+            font-family: 'Cinzel', serif; font-size: 10px;
+            text-decoration: none; z-index: 200;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            letter-spacing: 2px; min-height: 36px;
+            display: flex; align-items: center; gap: 6px;
+            transition: border-color 0.18s, color 0.18s;
+        }
+        .back-btn:hover { border-color: var(--crimson-mid); color: var(--washi); }
+
+        /* ─── Scroll dots ────────────────────────── */
+        .scroll-dots {
+            flex-shrink: 0;
+            display: flex; justify-content: center; align-items: center;
+            gap: 7px;
+            padding: 10px 0 max(env(safe-area-inset-bottom), 14px);
+            position: relative; z-index: 10;
+        }
+        .dot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: rgba(196,160,48,0.2);
+            transition: background 0.3s, transform 0.3s, width 0.3s, border-radius 0.3s;
+        }
+        .dot.active {
+            background: var(--crimson-mid);
+            transform: scale(1.2);
+            width: 18px; border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="FunZone.html" class="back-btn">← Back</a>
+
+    <div class="nav-header">
+        <div class="header-mon"><span>✿</span></div>
+        <h1>Explore Japan</h1>
+        <span class="nav-header-jp">日本を探索する</span>
+        <div class="brush-divider"></div>
+        <p>Augmented Reality Landmarks</p>
+    </div>
+
+    <div class="explorer-grid" id="grid"></div>
+    <div class="scroll-dots" id="dots"></div>
+
+    <script>
+        const landmarks = [
+            { name: "Tokyo Skytree",       city: "Tokyo",  folder: "tokyoskytree",        file: "tokyoskytree",        hasUsdz: true  },
+            { name: "Japanese Torii Gate", city: "Japan",  folder: "Japanese Torii Gate",  file: "Japanese Torii Gate", hasUsdz: true  },
+            { name: "Japanese Castle",     city: "Japan",  folder: "japanesecastle",        file: "japanesecastle",      hasUsdz: true  },
+            { name: "Nijo Castle",         city: "Kyoto",  folder: "Nijo Castle japan",     file: "Nijo Castle japan",   hasUsdz: false },
+            { name: "Pagoda",              city: "Japan",  folder: "pagoda",                file: "pagoda",              hasUsdz: true  },
+            { name: "Kimono Dress",        city: "Japan",  folder: "dress",                 file: "dress",               hasUsdz: true  },
+        ];
+
+        const grid   = document.getElementById('grid');
+        const dotsEl = document.getElementById('dots');
+
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        const preloaded = {};
+
+        function preloadModel(l, i) {
+            const mv = document.createElement('model-viewer');
+            mv.id = `mv-ar-${i}`;
+            mv.setAttribute('src', `ExploreJapan/${l.folder}/${l.file}.glb`);
+            if (isIOS && l.hasUsdz) mv.setAttribute('ios-src', `ExploreJapan/${l.folder}/${l.file}.usdz`);
+            mv.setAttribute('ar', '');
+            mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+            mv.setAttribute('ar-placement', 'floor');
+            mv.setAttribute('ar-scale', 'auto');
+            mv.setAttribute('camera-controls', '');
+            mv.setAttribute('touch-action', 'none');
+            mv.setAttribute('interaction-prompt', 'none');
+            mv.setAttribute('shadow-intensity', '1');
+            mv.setAttribute('exposure', '1.1');
+            mv.setAttribute('xr-environment', '');
+            mv.setAttribute('environment-image', 'neutral');
+            mv.setAttribute('ar-environment-estimation', '');
+            mv.setAttribute('loading', 'eager');
+            mv.setAttribute('reveal', 'auto');
+            mv.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;top:0;left:0;';
+            document.body.appendChild(mv);
+            preloaded[i] = mv;
+            mv.addEventListener('load',  () => { preloaded[i].ready = true; console.log(`✅ ${l.name}`); });
+            mv.addEventListener('error', () => { console.warn(`⚠️ Failed: ${l.name}`); });
+        }
+
+        // City translations for Japanese flair
+        const cityJP = {
+            'Tokyo': '東京', 'Kyoto': '京都', 'Japan': '日本',
+        };
+
+        landmarks.forEach((l, i) => {
+            const imgPath = `ExploreJapan/${l.folder}/${l.file}.png`;
+            const jpCity  = cityJP[l.city] || l.city;
+
+            const card = document.createElement('div');
+            card.className = 'landmark-card';
+            card.dataset.index = i;
+
+            card.innerHTML = `
+                <div class="thumb-wrap">
+                    <img src="${imgPath}" alt="${l.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
+                    <div class="card-badge">${String(i+1).padStart(2,'0')} / ${String(landmarks.length).padStart(2,'0')}</div>
+                </div>
+                <div class="landmark-info">
+                    <div class="landmark-name">${l.name}</div>
+                    <div class="landmark-city">${l.city} &nbsp;·&nbsp; ${jpCity}</div>
+                    <button class="ar-btn" id="arbtn-${i}">
+                        <span>✦</span> View in Real World
+                    </button>
+                </div>
+            `;
+
+            grid.appendChild(card);
+            preloadModel(l, i);
+
+            card.querySelector(`#arbtn-${i}`).addEventListener('click', () => {
+                const mv = preloaded[i];
+                if (mv) mv.activateAR();
+            });
+
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.dataset.index = i;
+            dotsEl.appendChild(dot);
+        });
+
+        const dots = dotsEl.querySelectorAll('.dot');
+
+        grid.addEventListener('scroll', () => {
+            const center = grid.scrollLeft + grid.clientWidth / 2;
+            let closest = 0, minDist = Infinity;
+            grid.querySelectorAll('.landmark-card').forEach((card, i) => {
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                const dist = Math.abs(center - cardCenter);
+                if (dist < minDist) { minDist = dist; closest = i; }
+            });
+            dots.forEach((d, i) => d.classList.toggle('active', i === closest));
+        }, { passive: true });
+    </script>
+</body>
+</html>
