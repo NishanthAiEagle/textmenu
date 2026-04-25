@@ -11,6 +11,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
+    <!-- ✅ model-viewer loaded as module -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
@@ -98,28 +99,21 @@
             background: radial-gradient(ellipse at 50% 60%, #1a150a 0%, #080604 100%);
         }
 
-        /* Static PNG thumbnail — shown before 3D loads */
+        /* Static PNG thumbnail */
         .model-poster {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            position: absolute;
-            inset: 0;
+            position: relative;
             z-index: 1;
-            transition: opacity 0.4s ease;
-        }
-        /* Hide poster once 3D model is active */
-        .model-wrap.model-active .model-poster {
-            opacity: 0;
-            pointer-events: none;
         }
 
         /*
-         * model-viewer: hidden by default (poster shown instead).
-         * Once user taps "View 3D", it becomes visible + interactive.
-         * touch-action="none" lets model-viewer capture all touch gestures
-         * including pinch-to-zoom without interference from the scroll container.
+         * ✅ AR FIX: model-viewer MUST be visible & sized in the DOM
+         * for activateAR() to work as a direct gesture on Android.
+         * We hide it visually but keep it in layout using opacity + pointer-events.
+         * Position absolute so it doesn't push the poster image.
          */
         model-viewer {
             position: absolute;
@@ -127,51 +121,15 @@
             width: 100%;
             height: 100%;
             background-color: transparent;
+            /* Visually hidden but fully present in DOM */
             opacity: 0;
             pointer-events: none;
             z-index: 2;
-            transition: opacity 0.4s ease;
-            --poster-color: transparent;
-        }
-        /* When 3D mode is active, show the model-viewer and enable touch */
-        .model-wrap.model-active model-viewer {
-            opacity: 1;
-            pointer-events: auto;
         }
 
+        /* Hide model-viewer's built-in UI chrome */
         model-viewer::part(default-progress-bar) { display: none; }
         model-viewer::part(default-ar-button)     { display: none; }
-
-        /* ─── Pinch hint overlay ──────────────────── */
-        .pinch-hint {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(8,6,4,0.7);
-            border: 1px solid rgba(184,151,58,0.35);
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-size: 9px;
-            letter-spacing: 0.12em;
-            color: var(--yama2);
-            text-transform: uppercase;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            pointer-events: none;
-            z-index: 6;
-            opacity: 0;
-            transition: opacity 0.4s;
-            white-space: nowrap;
-        }
-        .model-wrap.model-active .pinch-hint {
-            opacity: 1;
-            animation: fadeOutHint 3s ease 2s forwards;
-        }
-        @keyframes fadeOutHint {
-            from { opacity: 1; }
-            to   { opacity: 0; }
-        }
 
         /* ─── AR-Ready Badge ──────────────────────── */
         .ar-badge {
@@ -199,7 +157,7 @@
             transform: translateY(0);
         }
 
-        /* ─── Loading overlay ─────────────────────── */
+        /* ─── Loading overlay (shown while GLB downloads) ── */
         .ar-loading {
             position: absolute;
             inset: 0;
@@ -268,66 +226,42 @@
             margin-bottom: 12px;
         }
 
-        /* ─── Button row ──────────────────────────── */
-        .btn-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* Shared button base */
-        .action-btn {
-            flex: 1;
+        /* ─── AR Button ───────────────────────────── */
+        .ar-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--yama) 0%, var(--yama2) 100%);
             border: none;
             padding: 13px;
             border-radius: 8px;
+            color: var(--ink);
             font-weight: 600;
             font-size: 11px;
-            letter-spacing: 0.10em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+            transition: opacity 0.2s, transform 0.15s;
             min-height: 44px;
             position: relative;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
-            transition: opacity 0.2s, transform 0.15s;
         }
-        .action-btn::after {
+        .ar-btn::after {
             content: '';
             position: absolute;
             inset: 0;
             background: rgba(255,255,255,0);
             transition: background 0.15s;
         }
-        .action-btn:active::after { background: rgba(255,255,255,0.15); }
-        .action-btn:active        { transform: scale(0.97); }
-        .action-btn:disabled {
-            opacity: 0.4;
+        .ar-btn:active::after { background: rgba(255,255,255,0.15); }
+        .ar-btn:active        { transform: scale(0.97); }
+        .ar-btn:disabled {
+            opacity: 0.45;
             cursor: not-allowed;
             transform: none;
-        }
-
-        /* 3D view button — secondary style */
-        .view3d-btn {
-            background: rgba(184,151,58,0.12);
-            border: 1px solid rgba(184,151,58,0.35);
-            color: var(--yama2);
-            flex: 0 0 auto;
-            padding: 13px 14px;
-        }
-        /* Active state when 3D is showing */
-        .view3d-btn.is-active {
-            background: rgba(184,151,58,0.25);
-            border-color: var(--yama);
-        }
-
-        /* AR button — primary gradient */
-        .ar-btn {
-            background: linear-gradient(135deg, var(--yama) 0%, var(--yama2) 100%);
-            color: var(--ink);
         }
 
         /* ─── Back Button ─────────────────────────── */
@@ -396,6 +330,7 @@
         const grid   = document.getElementById('grid');
         const dotsEl = document.getElementById('dots');
 
+        // ✅ Detect iOS for USDZ Quick Look
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
@@ -410,9 +345,9 @@
             card.dataset.index = i;
 
             card.innerHTML = `
-                <div class="model-wrap" id="wrap-${i}">
+                <div class="model-wrap">
 
-                    <!-- Static PNG thumbnail -->
+                    <!-- Static PNG — instant thumbnail, zero 3D cost -->
                     <img
                         class="model-poster"
                         src="${pngPath}"
@@ -421,10 +356,15 @@
                     >
 
                     <!--
-                        touch-action="none" — lets model-viewer own ALL touch input,
-                        enabling pinch-to-zoom without browser interference.
-                        camera-controls enables orbit + pinch-to-zoom by default.
-                        min-camera-orbit / max-camera-orbit constrain zoom range.
+                        ✅ AR FIXES applied:
+                        • loading="eager" on first card, "lazy" on rest — GLB starts
+                          downloading early so AR launches faster
+                        • reveal="interaction" — prevents model-viewer rendering the
+                          3D scene in the background (saves GPU, avoids visual glitch)
+                        • ar-scale="fixed" — model appears at real-world scale, not
+                          device-scaled, for instant correct placement
+                        • environment-image="neutral" — fast lighting, no HDR delay
+                        • No auto-rotate — thumbnail is PNG, not the 3D viewer
                     -->
                     <model-viewer
                         id="mv-${i}"
@@ -441,13 +381,10 @@
                         shadow-softness="0.8"
                         exposure="1.1"
                         camera-controls
-                        touch-action="none"
-                        min-camera-orbit="auto auto 5%"
-                        max-camera-orbit="auto auto 200%"
-                        interaction-prompt="none"
+                        touch-action="pan-y"
                     ></model-viewer>
 
-                    <!-- Spinner shown while GLB loads -->
+                    <!-- Spinner + progress bar shown while GLB loads -->
                     <div class="ar-loading" id="arload-${i}">
                         <div class="loader-ring"></div>
                         <div class="loader-bar-track">
@@ -457,168 +394,97 @@
                     </div>
 
                     <div class="ar-badge" id="badge-${i}">✦ AR Ready</div>
-
-                    <!-- Pinch hint shown briefly when 3D view activates -->
-                    <div class="pinch-hint" id="hint-${i}">⟺ Pinch to zoom · Drag to rotate</div>
                 </div>
 
                 <div class="landmark-info">
                     <div class="landmark-name">${l.name}</div>
                     <div class="landmark-city">${l.city}</div>
-                    <div class="btn-row">
-                        <!-- Toggle 3D view with pinch-to-zoom -->
-                        <button
-                            class="action-btn view3d-btn"
-                            id="v3dbtn-${i}"
-                            onclick="toggle3D(${i})"
-                            title="View 3D model with pinch-to-zoom"
-                        >
-                            ⬡ 3D
-                        </button>
-                        <!-- Launch AR -->
-                        <button
-                            class="action-btn ar-btn"
-                            id="arbtn-${i}"
-                            onclick="launchAR(${i})"
-                        >
-                            <span>🪐</span> View in Real World
-                        </button>
-                    </div>
+                    <!--
+                        ✅ AR FIX: The button itself calls activateAR() inline.
+                        On Android Scene Viewer, activateAR() MUST be called
+                        synchronously within the user's tap gesture — any async
+                        await/setTimeout breaks the gesture chain and AR won't open.
+                        We handle this with the data-ready flag checked synchronously.
+                    -->
+                    <button class="ar-btn" id="arbtn-${i}" onclick="launchAR(${i})">
+                        <span>🪐</span> View in Real World
+                    </button>
                 </div>
             `;
 
             grid.appendChild(card);
 
+            // Dot indicator
             const dot = document.createElement('div');
             dot.className = 'dot' + (i === 0 ? ' active' : '');
             dotsEl.appendChild(dot);
         });
 
         // ─── Per-card state ────────────────────────────────────────────────────
-        const state = {};
+        // Stored outside so launchAR() (global) can access it synchronously
+        const state = {};  // state[i] = { mv, ready, loading }
 
         requestAnimationFrame(() => {
             landmarks.forEach((l, i) => {
-                const mv      = document.getElementById(`mv-${i}`);
-                const arload  = document.getElementById(`arload-${i}`);
-                const bar     = document.getElementById(`bar-${i}`);
-                const lbl     = document.getElementById(`lbl-${i}`);
-                const badge   = document.getElementById(`badge-${i}`);
-                const arbtn   = document.getElementById(`arbtn-${i}`);
-                const v3dbtn  = document.getElementById(`v3dbtn-${i}`);
-                const wrap    = document.getElementById(`wrap-${i}`);
+                const mv     = document.getElementById(`mv-${i}`);
+                const arload = document.getElementById(`arload-${i}`);
+                const bar    = document.getElementById(`bar-${i}`);
+                const lbl    = document.getElementById(`lbl-${i}`);
+                const badge  = document.getElementById(`badge-${i}`);
+                const btn    = document.getElementById(`arbtn-${i}`);
 
-                state[i] = {
-                    mv, arload, bar, lbl, badge, arbtn, v3dbtn, wrap,
-                    ready: false, loading: false, showing3D: false
-                };
+                state[i] = { mv, arload, bar, lbl, badge, btn, ready: false, loading: false };
 
-                // Download progress
+                // ✅ Download progress → update bar
                 mv.addEventListener('progress', (e) => {
                     const pct = Math.round(e.detail.totalProgress * 100);
                     if (bar) bar.style.width = pct + '%';
                     if (lbl) lbl.textContent = `Loading… ${pct}%`;
                 });
 
-                // Model loaded
+                // ✅ Model ready → mark state, show badge, hide spinner
                 mv.addEventListener('load', () => {
-                    const s = state[i];
-                    s.ready   = true;
-                    s.loading = false;
+                    state[i].ready   = true;
+                    state[i].loading = false;
                     arload.classList.remove('show');
                     badge.classList.add('visible');
 
-                    // If user tapped 3D while loading → activate 3D view now
-                    if (s.pending3D) {
-                        s.pending3D = false;
-                        activate3DView(i);
-                    }
-                    // If user tapped AR while loading → launch AR now
-                    if (s.pendingAR) {
-                        s.pendingAR = false;
+                    // ✅ If user already tapped while loading, launch AR now
+                    if (state[i].pendingAR) {
+                        state[i].pendingAR = false;
                         mv.activateAR();
                     }
                 });
 
                 mv.addEventListener('error', () => {
-                    const s = state[i];
-                    s.loading = false;
+                    state[i].loading = false;
                     arload.classList.remove('show');
                     if (lbl) lbl.textContent = 'Model unavailable';
-                    arbtn.disabled = true;
-                    v3dbtn.disabled = true;
-                    arbtn.textContent = 'Unavailable';
+                    btn.disabled = true;
+                    btn.textContent = 'Unavailable';
                 });
             });
         });
 
-        // ─── Activate 3D view ──────────────────────────────────────────────────
-        // Makes model-viewer visible + interactive so pinch-to-zoom works
-        function activate3DView(i) {
-            const s = state[i];
-            s.showing3D = true;
-            s.wrap.classList.add('model-active');
-            s.v3dbtn.classList.add('is-active');
-            s.v3dbtn.innerHTML = '✕ 2D';
-
-            // Prevent the horizontal scroll container from stealing scroll/pinch
-            // while the user is interacting with the 3D model
-            s.wrap.addEventListener('touchstart', stopScrollPropagation, { passive: false });
-        }
-
-        // ─── Deactivate 3D view ────────────────────────────────────────────────
-        function deactivate3DView(i) {
-            const s = state[i];
-            s.showing3D = false;
-            s.wrap.classList.remove('model-active');
-            s.v3dbtn.classList.remove('is-active');
-            s.v3dbtn.innerHTML = '⬡ 3D';
-            s.wrap.removeEventListener('touchstart', stopScrollPropagation);
-        }
-
-        // Prevent parent scroll container from intercepting touches on the model
-        function stopScrollPropagation(e) {
-            // Allow single-finger vertical scroll on the grid to still work
-            // but block the horizontal scroll snap so pinch is not interrupted
-            if (e.touches.length > 1) {
-                e.stopPropagation();
-            }
-        }
-
-        // ─── Toggle 3D / back to thumbnail ────────────────────────────────────
-        function toggle3D(i) {
-            const s = state[i];
-
-            if (s.showing3D) {
-                deactivate3DView(i);
-                return;
-            }
-
-            if (s.ready) {
-                activate3DView(i);
-            } else if (!s.loading) {
-                s.loading   = true;
-                s.pending3D = true;
-                s.mv.setAttribute('loading', 'eager');
-                s.arload.classList.add('show');
-            } else {
-                s.pending3D = true;
-            }
-        }
-
-        // ─── AR launcher (must be synchronous in tap gesture) ─────────────────
+        // ─── Global AR launcher — called synchronously from onclick ───────────
+        // ✅ KEY: Must be synchronous in the tap gesture for Android Scene Viewer.
+        // We set pendingAR=true if model isn't ready, then activateAR() fires
+        // automatically from the 'load' handler above.
         function launchAR(i) {
             const s = state[i];
             if (!s) return;
 
             if (s.ready) {
+                // Model loaded → launch AR immediately (stays in gesture chain)
                 s.mv.activateAR();
             } else if (!s.loading) {
-                s.loading   = true;
-                s.pendingAR = true;
+                // Not yet loading → trigger download + show spinner
+                s.loading    = true;
+                s.pendingAR  = true;
                 s.mv.setAttribute('loading', 'eager');
                 s.arload.classList.add('show');
             } else {
+                // Already loading → just mark pending, spinner already showing
                 s.pendingAR = true;
             }
         }
@@ -629,11 +495,11 @@
         grid.addEventListener('scroll', () => {
             const center = grid.scrollLeft + grid.clientWidth / 2;
             let closest = 0, minDist = Infinity;
-            grid.querySelectorAll('.landmark-card').forEach((card, ci) => {
+            grid.querySelectorAll('.landmark-card').forEach((card, i) => {
                 const dist = Math.abs((card.offsetLeft + card.offsetWidth / 2) - center);
-                if (dist < minDist) { minDist = dist; closest = ci; }
+                if (dist < minDist) { minDist = dist; closest = i; }
             });
-            dots.forEach((d, di) => d.classList.toggle('active', di === closest));
+            dots.forEach((d, i) => d.classList.toggle('active', i === closest));
         }, { passive: true });
     </script>
 </body>
