@@ -181,34 +181,13 @@
             position: relative;
             overflow: hidden;
             background: radial-gradient(ellipse at 50% 60%, #1a150a 0%, #080604 100%);
-            touch-action: none; /* let JS handle all touch on thumb */
         }
         .thumb-wrap img {
             width: 100%; height: 100%;
             object-fit: cover; display: block;
             transition: transform 0.5s ease;
-            transform-origin: center center;
-            will-change: transform;
-            user-select: none; -webkit-user-select: none;
         }
-        /* suppress hover zoom when user is pinching */
-        .thumb-wrap.pinching img { transition: none !important; }
-        .landmark-card:hover .thumb-wrap:not(.pinching) img { transform: scale(1.05); }
-
-        /* Zoom hint badge */
-        .zoom-hint {
-            position: absolute; bottom: 38px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(16,10,4,0.72);
-            border: 1px solid rgba(196,160,48,0.2);
-            color: rgba(245,237,224,0.6);
-            font-family: 'Cinzel', serif;
-            font-size: 8px; letter-spacing: 2px;
-            padding: 4px 10px; border-radius: 1px;
-            pointer-events: none; z-index: 4;
-            opacity: 1; transition: opacity 0.6s;
-        }
-        .zoom-hint.hidden { opacity: 0; }
+        .landmark-card:hover .thumb-wrap img { transform: scale(1.05); }
 
         .thumb-wrap::after {
             content: '';
@@ -441,10 +420,9 @@
             card.className = 'landmark-card';
             card.dataset.index = i;
             card.innerHTML = `
-                <div class="thumb-wrap" id="thumb-${i}">
-                    <img src="${imgPath}" alt="${l.name}" loading="${i === 0 ? 'eager' : 'lazy'}" id="img-${i}" draggable="false">
+                <div class="thumb-wrap">
+                    <img src="${imgPath}" alt="${l.name}" loading="${i === 0 ? 'eager' : 'lazy'}">
                     <div class="card-badge">${String(i+1).padStart(2,'0')} / ${String(landmarks.length).padStart(2,'0')}</div>
-                    <div class="zoom-hint" id="hint-${i}">✦ PINCH TO ZOOM</div>
                 </div>
                 <div class="landmark-info">
                     <div class="landmark-name">${l.name}</div>
@@ -513,129 +491,6 @@
             dot.className = 'dot' + (i === 0 ? ' active' : '');
             dot.dataset.index = i;
             dotsEl.appendChild(dot);
-
-            /* ── Pinch-to-zoom on thumbnail ── */
-            const thumbWrap = card.querySelector(`#thumb-${i}`);
-            const thumbImg  = card.querySelector(`#img-${i}`);
-            const hint      = card.querySelector(`#hint-${i}`);
-
-            let scale = 1, lastScale = 1;
-            let originX = 50, originY = 50; // % within image
-            let panX = 0, panY = 0, lastPanX = 0, lastPanY = 0;
-            let isPinching = false;
-            let hintTimer = setTimeout(() => hint.classList.add('hidden'), 3000);
-
-            const MIN_SCALE = 1, MAX_SCALE = 4;
-
-            function clampPan(s, px, py) {
-                // clamp so image edges don't go inside the container
-                const maxPan = ((s - 1) / 2) * 100;
-                return {
-                    x: Math.max(-maxPan, Math.min(maxPan, px)),
-                    y: Math.max(-maxPan, Math.min(maxPan, py))
-                };
-            }
-
-            function applyTransform(animated = false) {
-                thumbImg.style.transition = animated ? 'transform 0.25s ease' : 'none';
-                thumbImg.style.transformOrigin = `${originX}% ${originY}%`;
-                thumbImg.style.transform = `scale(${scale}) translate(${panX / scale}px, ${panY / scale}px)`;
-            }
-
-            function resetZoom(animated = true) {
-                scale = 1; panX = 0; panY = 0;
-                originX = 50; originY = 50;
-                thumbWrap.classList.remove('pinching');
-                applyTransform(animated);
-            }
-
-            thumbWrap.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    isPinching = true;
-                    thumbWrap.classList.add('pinching');
-                    hint.classList.add('hidden');
-                    clearTimeout(hintTimer);
-
-                    const t1 = e.touches[0], t2 = e.touches[1];
-                    lastScale = scale;
-                    lastPanX = panX; lastPanY = panY;
-
-                    // pinch midpoint as % of image element
-                    const rect = thumbWrap.getBoundingClientRect();
-                    originX = ((t1.clientX + t2.clientX) / 2 - rect.left) / rect.width  * 100;
-                    originY = ((t1.clientY + t2.clientY) / 2 - rect.top)  / rect.height * 100;
-
-                    e._startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-                    e._midX = (t1.clientX + t2.clientX) / 2;
-                    e._midY = (t1.clientY + t2.clientY) / 2;
-
-                    // store on element for use in touchmove
-                    thumbWrap._pinchStart = {
-                        dist: e._startDist,
-                        midX: e._midX, midY: e._midY,
-                        scale: lastScale, panX: lastPanX, panY: lastPanY
-                    };
-
-                    // prevent card scroll during pinch
-                    e.stopPropagation();
-                } else if (e.touches.length === 1 && scale > 1) {
-                    // single finger pan when zoomed in
-                    thumbWrap._panStart = {
-                        x: e.touches[0].clientX - panX,
-                        y: e.touches[0].clientY - panY
-                    };
-                    e.stopPropagation();
-                }
-            }, { passive: true });
-
-            thumbWrap.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2 && thumbWrap._pinchStart) {
-                    const t1 = e.touches[0], t2 = e.touches[1];
-                    const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-                    const ratio = dist / thumbWrap._pinchStart.dist;
-                    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, thumbWrap._pinchStart.scale * ratio));
-
-                    // translate following midpoint movement
-                    const rect = thumbWrap.getBoundingClientRect();
-                    const curMidX = (t1.clientX + t2.clientX) / 2;
-                    const curMidY = (t1.clientY + t2.clientY) / 2;
-                    const dx = curMidX - thumbWrap._pinchStart.midX;
-                    const dy = curMidY - thumbWrap._pinchStart.midY;
-
-                    const clamped = clampPan(scale, thumbWrap._pinchStart.panX + dx, thumbWrap._pinchStart.panY + dy);
-                    panX = clamped.x; panY = clamped.y;
-
-                    applyTransform(false);
-                    e.stopPropagation();
-                } else if (e.touches.length === 1 && scale > 1 && thumbWrap._panStart) {
-                    const dx = e.touches[0].clientX - thumbWrap._panStart.x;
-                    const dy = e.touches[0].clientY - thumbWrap._panStart.y;
-                    const clamped = clampPan(scale, dx, dy);
-                    panX = clamped.x; panY = clamped.y;
-                    applyTransform(false);
-                    e.stopPropagation();
-                }
-            }, { passive: true });
-
-            thumbWrap.addEventListener('touchend', (e) => {
-                if (isPinching && e.touches.length < 2) {
-                    isPinching = false;
-                    thumbWrap._pinchStart = null;
-                    if (scale <= 1.05) resetZoom(true);
-                    else thumbWrap.classList.remove('pinching');
-                }
-                if (e.touches.length === 0) thumbWrap._panStart = null;
-            }, { passive: true });
-
-            // Double-tap to reset zoom
-            let lastTap = 0;
-            thumbWrap.addEventListener('touchend', (e) => {
-                if (e.touches.length === 0) {
-                    const now = Date.now();
-                    if (now - lastTap < 280) resetZoom(true);
-                    lastTap = now;
-                }
-            }, { passive: true });
 
             /* ── Button handler ── */
             card.querySelector(`#arbtn-${i}`).addEventListener('click', async () => {
